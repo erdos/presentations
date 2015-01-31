@@ -1,19 +1,12 @@
 presentations
 =============
 
+This is a collection of some canned presentationd.
 
-
-
-on clojure
+The Clojure language
 ----------
 
  - <a href="http://prezi.com/jckhsmnwbxvm/?utm_campaign=share&utm_medium=copy">pattern matching</a>
- - advanced collections
- - introduction
-
-
-on rogallo wing
----------------
-
-on the spidron system
----------------------
+ - introduce the `clojure.core/for` macro 
+ - advanced collection concepts
+ - introduction to Clojure
