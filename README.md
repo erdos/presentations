@@ -1,12 +1,12 @@
-presentations
-=============
+# presentations
 
-This is a collection of some canned presentationd.
+This is a collection of some canned presentations.
 
-The Clojure language
-----------
+## Functional Programming
 
- - <a href="http://prezi.com/jckhsmnwbxvm/?utm_campaign=share&utm_medium=copy">pattern matching</a>
- - introduce the `clojure.core/for` macro 
- - advanced collection concepts
- - introduction to Clojure
+- <a href="https://github.com/erdos/presentations/tree/master/Clojure%20Pattern%20Matching">Pattern Matching in Clojure</a>
+
+## 3D Printing
+
+## Mathematics
+
