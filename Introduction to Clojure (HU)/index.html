@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>Clojure</title>
+
+<section>
+    <!-- This is the first slide -->
+    <h1>A Clo<i>j</i>ure nyelv</h1>
+    <i>Erdős János</i>
+    <i><small>ELTE IK - 13/4/3</small></i>
+</section>
+
+<section>
+  <h3>Bevezetés</h3>
+  <ul>
+    <li>Rich Hickey, 2007</li>
+    <li>Dinamikusan típusos</li>
+    <li>Funkcionális programozás</li>
+    <li><u>Immutable</u></li>
+    <li>Makrók!</li>
+    <li>LISP!</li>
+  </ul>
+</section>
+
+<section>
+  <!-- LISP is different img -->
+    <figure> <!-- Figures are used to display images and videos fullpage -->
+      <img src="different.jpg" />
+    </figure>
+</section>
+
+<section>
+  <h3>Alaptípusok</h3>
+  <ul>
+    <li>int, long: <code>42</code>
+    <li>float, double: <code>1.0</code>
+      <li>ratio: <code>22/7</code>
+    <li>bigint, bigdecimal: <code>42N</code>, <code>1M</code>
+    <li>boolean: <code>true</code>, <code>false</code>
+    <li>string: <code><u>"asdfgh"</u></code>
+    <li>regex: <code>#<u>"\d+"</u></code>
+  </ul>
+</section>
+
+<section>
+  <ul>
+    <li>szimbólum <code>foo, +, a42, foo/bar</code>
+    <li>kulcsszó <code>:foo, :+, :foo/bar</code>
+    <li>lista: <code><b>(</b>1 2 3<b>)</b></code>
+    <li>vektor: <code><b>[</b>1 2 3<b>]</b></code>
+    <li>map: <code><b>{</b>:a 1, :b 2<b>}</b></code>
+  </ul>
+</section>
+
+<section>
+  <h3>Nyelvtan</h3>
+  <ul>
+    <li>megjegyzés: <q>;</q> jeltől sor végéig
+    <li>az indentálást, sortöréseket, a  <q>,</q> jelet figyelmen kívül hagyjuk
+  </ul>
+</section>
+
+<section>
+  <ul>
+    <li>minden kifejezés
+    <li>mohó kiértékelés
+    <li>lengyel forma
+    <li>függvényhívás: <code>(fvnev a1 a2 ... an)</code>
+  </ul>
+</section>
+
+
+<section>
+  <code>
+(+ 1 1 2 3 5) <i>;; 1+1+2+3+5</i>
+
+(+ (* a a) (* b b)) <i>;; a<sup>2</sup>+b<sup>2</sup></i>
+
+(defn circle-area [r]
+  (* r r 3.141592))
+
+(->> "bemenet.txt"
+  line-seq
+  (map read-string)
+  (filter even?)
+  sort)
+  </code>
+</section>
+
+<section>
+  <dl>
+    <dt>Homoiconic</dt>
+    <dd>A fancy term describing the fact that Clojure programs are represented by Clojure data structures.</dd>
+  </dl>
+</section>
+
+<section>
+  <h3>Feltételes kifejezés</h3>
+  <code>(<b>if</b> expr then else)</code>
+  <i>Csak a megfelelő ágat értékeli ki. Hasonlóan:</i>
+  <code>(<b>cond</b>
+  when1  then-clause1
+  when2  then-clause2
+  <i>;...</i>
+  :else  else-clause)</code>
+  <i>(hamis érték: nil és false)</i>
+</section>
+
+<section>
+  <h3>Értékadás kifejezés</h3>
+  <code>(<b>let</b> [bindings] exprs)</code>
+  <i>Példa:</i>
+  <code>(let
+  [a 3, b 4
+   c (sqrt (+ (* a a) (* b b)]
+  (print <u>"c = "</u> c)
+  c)</code>
+</section>
+
+<section>
+  <h3>loop + recur</h3>
+  <code>(<b>loop</b> [<i>bindings</i>] <i>exprs</i>)</code>
+  <i>nincs TCO, de van helyette recur.</i>
+  <i>Példa:</i>
+  <code>(loop
+  [acc 1, c 12]
+  (if (pos? c)
+    (recur (* acc c)  (dec c))
+    acc))</code>
+</section>
+
+<section>
+  <h3>Függvények</h3>
+  <ul>
+    <li>
+      <code>(<b>fn</b> [args*] body*)</code>
+    <li>első osztalyú objektumok
+    <li>masik szintaxis: <code>#()</code>
+  </ul>
+  <code>(fn [x y] (* x y))</code>
+  <code>#(* %1 %2)</code>
+</section>
+
+<!--<section>
+  <h3>
+</section>-->
+
+<section>
+  <h3>Függvenyek - varargs</h3>
+  <i>egy paraméter</i>
+  <code>(<b>fn</b> [x] (/ (+ x y) 2)</code>
+  <i>különböző számú paraméter</i>
+  <code>(<b>fn</b> ([x] :egy)
+    ([x y] :ketto))</code>
+  <code>(<b>fn</b> [x & xs] ...)</code>
+</section>
+
+<section>
+  <h2>Névterek</h2>
+</section>
+
+<section>
+  <h3>(ns) makró</h3>
+  <code>(<b>ns</b> névtér-neve direktívák ...)</code>
+  <i>legfontosabb direktívák</i>
+  <code>(<b>import</b> ...)</code>
+  <code>(<b>require</b> ...)</code>
+  <i>most már hivatkozhatunk más névterekre is</i>
+  <code>(clojure.set/union #{:a :b} #{:b})</code>
+</section>
+
+<section>
+  <h3>Definíciók</h3>
+  <h4>var definiálása</h4>
+  <code>(<b>def</b> <i>varnév érték</i>)</code>
+  <h4>függvénydefiníció</h4>
+  <code>(<b>defn</b> <i>fvnev függvénytörzs</i>)</code>
+  <code>(def a 1)</code>
+  <code>(defn inc [x] (+ x 1))</code>
+</section>
+
+
+<section class="Lime">
+  <h2>Adatszerkezetek</h2>
+</section>
+
+<section class="Lime">
+  <h3>Map</h3>
+  <ul>
+    <li>kulcs-érték párok
+    <li>szintaxis: <code><b>{</b>:a 1, :b 2<b>}</b></code>
+    <li><code>(hash-map)</code>
+    <li><code>(sorted-map)</code>
+    <li><code>(array-map)</code>
+    <li>ez is függvény
+  </ul>
+</section>
+
+<section class="Lime">
+  <h3>Map - példa</h3>
+  <div class="incremental">
+    <kbd>(def a <b>{</b><i>:a</i> 1 <i>:b</i> 2<b>}</b>)</kbd>
+    <kbd>(<b>get</b> a <i>:a</i>)</kbd>
+    <kbd>(a <i>:a</i>)</kbd>
+    <kbd>(<i>:a</i> a)</kbd>
+<!--
+    <kbd style="position: absolute;
+                box-shadow: 0px 0px 12px black;
+                -webkit-transform: scale(1.2,1.2) rotate(1deg);
+                top: 200px; left: 20px; "
+>(<b>assoc</b>
+         {:a 1 :b 2}
+      :c 42)</kbd>
+
+    <kbd style="position: absolute;
+                box-shadow: 0px 0px 12px black;
+                -webkit-transform: scale(1.1,1.1) rotate(6deg) ;
+                top: 200px; left: 23px; "
+         >(<b>dissoc</b>
+            {:a 1 :b 2 :c 3} :c)</kbd>
+
+    <kbd style="position: absolute;
+                box-shadow: 0px 0px 12px black;
+                -webkit-transform: scale(1.4,1.4) rotate(355deg);
+                top: 230px; left: 11px; ">(<b>seq</b> {:a 1 :b 2 :c 3})</kbd>
+-->
+
+  </div>
+</section>
+
+<section class="Lime">
+  <h3>Vector</h3>
+  <ul>
+    <li>gyors véletlen elérés
+    <li>szintaxis: <code><b>[</b>:a :b :c<b>]</b></code>
+    <li>nullától indexel.
+    <li>ez is függvény!
+      <div class="incremental">
+        <code>([:a :b :c] 2)</code>
+        <samp>=> :c</samp>
+    </div></li>
+  </ul>
+</section>
+
+<section class="Lime">
+  <h3>Set</h3>
+  <ul>
+    <li>halmaz típus
+    <li>szintaxis: #{:a :b :c}
+    <li>ez is függvény!
+      <div class="incremental">
+        <code>(#{:a :b :c} :a)</code>
+        <samp>=> :a</samp>
+      </div>
+    </li>
+
+</section>
+
+<section class="Lime">
+  <h3>Lista</h3>
+  <ul>
+    <li>linkelt lista típus
+    <li>szintaxis: <code><b>(</b>1 2 3<b>)</b></code>
+    <li>függvényhívásként értékelődik ki
+  </ul>
+</section>
+
+<section class="Lime">
+  <dl>
+    <dt>Immutable</dt>
+    <dd>An object whose state cannot be modified after it is created.</dd>
+  </dl>
+</section>
+
+
+<section class="Lime">
+  <h3>seq absztrakció</h3>
+  <ul>
+    <li>logikai lista (vo.: LISP)
+    <li>akár végtelen szekvenciák
+    <li>lista feje: <code>(first xs)</code>
+    <li>hátralévő rész: <code>(rest xs)</code>
+    <li>hozzáfűzés: <code>(cons x xs)</code>
+  </ul>
+</section>
+
+<section> <!-- TODO impl -->
+  <h3>lazy-seq</h3>
+  <code>(<b>lazy-seq</b> body)</code>
+  <i>késlelteti a törzs végrehajtását.</i>
+  <code><small>(defn map'
+  [f coll]
+  (when (seq coll)
+    (cons (f (first coll))
+      (lazy-seq (map' f (rest coll))))))</small></code>
+</section>
+
+<section>
+  <h2>Állapot</h2>
+</section>
+
+<section>
+  <h3>Atom</h3>
+  <ul>
+    <li>mutabilis állapot
+    <li>szintaxis: <code>(<b>atom</b> <i><small>kezdoertek</small></i>)</code>
+    <li>dereferálás: <code>(<b>deref</b> a)</code>
+    <li>deref röviden: <code><b>@</b>a</code>
+    <li>watcher hozzáadása
+  </ul>
+</section>
+
+<section>
+  <H3>Agent</H3>
+  <ul>
+    <li><i>mint az atom, de aszinkron</i></li>
+    <li>szintaxis:
+      <small><code>(<b>agent</b> <i>state & opts</i>)</code>
+      </small></li>
+    <li>állapot megváltoztatása:<br>
+      <code>(<b>send</b> <i>a f args*</i>)</code></li>
+    <li>dereferálni kell:
+      <code>(<b>deref</b> <i>a</i>)</code></li>
+  </ul>
+</section>
+
+<section>
+  <H3>Future</H3>
+  <ul>
+    <li>a kódot egy másik szálon hajtja végre, megjegyzi.</li>
+    <li>szintaxis: <br>
+      <code>(<b>future</b> <i>& body</i>)</code></li>
+    <li>dereferalni kell: <br>
+      <code>(<b>deref</b> <i>a</i>)</code></li>
+    <li>végrehajtódott már?<br>
+    <code>(<b>realized?</b> <i>a</i>)</code></li>
+  </ul>
+</section>
+
+<section>
+  <H3>Delay</H3>
+  <ul>
+    <li>a kódot az első dereferálásnál hajtja végre, megjegyzi</li>
+    <li>szintaxis: <br>
+      <code>(<b>delay</b> <i>& body</i>)</code></li>
+    <li>dereferálni kell: <br>
+      <code>(<b>deref</b> <i>d</i>)</code></li>
+    <li>végrehajtódott már?<br>
+    <code>(<b>realized?</b> <i>d</i>)</code></li>
+  </ul>
+</section>
+
+<section>
+  <H3>Promise</H3>
+  <ul>
+    <li>egyszer kaphat állapotot</li>
+    <li>létrehozas:
+      <code>(<b>promise</b>)</code></li>
+    <li>dereferálni kell:
+      <code>(<b>deref</b> <i>p</i>)</code></li>
+    <li>kapott már értéket?<br>
+      <code>(<b>realized?</b> <i>p</i>)</code></li>
+    <li>értékadás:<br>
+      <code>(<b>deliver</b> <i>p value</i>)</code></li>
+  </ul>
+</section>
+
+<!--<section>
+  <h3>pmap</h3>
+  <ul>
+    <li>mint a <code>(map)</code>, de parhuzamos</li>
+  </ul>
+</section>-->
+
+<section>
+  <h2>Makrók</h2>
+</section>
+
+<section>
+  <h3>Példa: Threading</h3>
+
+  <code>(f (e (d (c (b (a x))))))</code>
+  <i>helyett:</i>
+  <code>(<b>-></b> x a b c d e f)</code>
+</section>
+
+<section>
+  <h3>Definíció</h3>
+  <i>ezek is függvények!</i>
+  <code>(<b>defmacro</b> <i>nev fv-torzs</i>)</code>
+  <i>vizsgálat:</i>
+  <code>(<b>macroexpand-1</b> '(when X Y))</code>
+  <samp>=> (if X Z nil)</samp>
+</section>
+
+<section>
+  <h3>syntax-quote</h3>
+  <i>Kód beillesztése</i><br>
+  <ul>
+    <li>syntax-quote: <code><b>`</b>form</code>
+    <li>unquote: <code><b>~</b>expr</code>
+    <li>splicing: <code><b>~@</b>exprs</code>
+  </ul>
+</section>
+
+<section>
+  <code>(<b>def</b> DEBUG false)
+(<b>defmacro</b> when-debug
+  [& xs]
+  (if DEBUG
+    <i>`(do ~@xs)</i>))
+<span class="incremental">
+<span>(<b>when-debug</b> (<b>print</b> <i>"debug!"</i>))</span>
+<span><i>;; => nil</i></span>
+
+<span>(<b>def</b> DEBUG true)
+(<b>when-debug</b> (<b>print</b> <i>"debug!"</i>))</span>
+<i>;; => (do (print "debug"))</i>
+</span></code>
+</section>
+
+<section>
+  <h2>Polimorfizmus</h2>
+</section>
+
+<section>
+  <h3>Multimetódusok</h3>
+  <i>multimethod létrehozása</i>
+  <code>(<b>defmulti</b> <i>nev dispath-fn</i>)</code>
+  <i>metódus hozzáadása</i>
+  <code>(<b>defmethod</b> <i>nev dispath-val fn-body</i>)</code>
+</section>
+
+<section>
+  <code>(<b>defmulti</b> tipus type)
+    <span class="incremental">
+<span>(<b>defmethod</b> tipus
+  Long :egesz)</span>
+
+<span>(<b>defmethod</b> tipus
+  String :string)</span>
+
+<span>(<b>defmethod</b> tipus :default :ismeretlen)</span>
+
+<span>(tipus "asd") <i>;; => :string</i></span>
+<span>(tipus 3.14)  <i>;; => :ismeretlen</i></span></span></code>
+</section>
+
+<section>
+  <h3>Saját típusok</h3>
+  <i>defrecord, deftype</i><br>
+  <h3>Öröklődés: protokollok</h3>
+  <i>defprotocol</i>
+  <i>extend-type, extend-protocol</i>
+</section>
+
+<section>
+  <code>;;(defrecord name [fields*] specs*)
+
+(<b>defrecord</b> Person
+  [first-name last-name])
+
+(def ES
+  (new Persion
+       "Erwin" "Schrodinger"))
+
+(:first-name ES) ; => "Erwin"
+(:last-name ES)  ; => "Schrodinger"
+
+  </code>
+
+</section>
+
+<section>
+  <code>
+(<b>defprotocol</b> <i>CanSpeak</i>
+  (say-something! [x]))
+
+(<b>extend-protocol</b> CanSpeak
+  <i>Cow</i>
+  (say-something! [x] "MOO"))
+
+  <i>Fox</i>
+  (say-something! [x] "AASDASDAD!"))
+
+</code>
+</section>
+
+<section>
+  <h2>Java interop</h2>
+</section>
+
+<section>
+  <h3>Objektumok létrehozása</h3>
+  <ul>
+    <li>szintaxis: <code>(new X ...)</code></li>
+    <li>rövidebben: <code>(X. ...)</code></li>
+  </ul>
+  <code>(<b>new</b> <i>java.awt.Color 213 32 34</i>)</code>
+  <code>(<i>java.awt.Color. 123 23 43</i>)</code>
+</section>
+
+<section>
+  <h3>Kivetelkezeles</h3>
+  <i>hasonlóan, mint a java-ban is</i>
+  <code>(<b>throw</b> (RuntimeException. <u>"sad"</u>))</code>
+  <code>(<b>try</b> (something)
+     (<b>catch</b> Exception e (handle e)))</code>
+  <code>(<b>try</b> (something)
+     (<b>finally</b> (something-else)))</code>
+</section>
+
+
+<section>
+  <h3>Adattagok, eljárások elérése</h3>
+  <i>Reflection API-val</i>
+  <code>(.fieldName obj)</code>
+  <code>(.methodName instance arg<sub>1</sub> .. arg<sub>n</sub>)</code>
+  <code>(.methodName class-name a<sub>1</sub> .. a<sub>n</sub>)</code>
+</section>
+
+<section>
+  <h3>Altípusok megvalósítása</h3>
+  <code>(<b>proxy</b> [infs..] [args..] ...)</code>
+</section>
+
+
+<section>
+  <h2>Live coding session</h2>
+</section>
+
+<section>
+  <h3>Ismétlés</h3>
+  <ul>
+    <li>Mit jelent, hogy homoikonikus?
+    <li>Mit jelent, hogy immutabilis?
+    <li>Mi a különbség a szimbólum es a kulcsszó között?
+  </ul>
+</section>
+
+<section>
+  <h3>Források</h3>
+  <ul>
+    <li>web: clojure.org
+    <li>irc: #clojure at freenode
+    <li>doc: clojure-doc.org
+    <li>API: clojuredocs.org
+    <li>diasor: github.com/erdos
+  </ul>
+</div>
+</section>
+
+<!-- Your Style -->
+<!-- Define the style of your presentation -->
+
+<!-- Maybe a font from http://www.google.com/webfonts ? -->
+<!-- <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'> -->
+
+<style>
+
+*.sm {font-size: 0.6em;}
+
+section > h2:only-child{
+    display: block;
+    position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; line-height: 600px;
+    margin: 0px; padding: 0px; text-align: center;
+
+   background: black;
+   text-shadow: 0px 4px 2px silver;
+   color: white;
+}
+
+  kbd, samp, code{background: #eeeeee;border-radius: 3px; text-shadow: 0px 2px 1px white; white-space: pre;}
+  code > b, kbd > b, samp > b {color: orange;}
+  code > u, kbd > u, samp > u {color: #441111; text-decoration: none;}
+  code > small, kbd > small, samp > small {font-size: 0.7em;}
+
+  section > code, section > i, kbd, samp {margin: 10px 100px; white-space: pre; display: block; width: auto; float:left;}
+
+section > code:only-child{
+  position: absolute;
+  top: 0px; left:0px; bottom: 0px; right: 0px; margin: 0px; padding: 50px;
+  background: #333; color: white; text-shadow: 0px 3px 1px black;
+}
+section > ul:only-child{margin-top:150px;}
+
+  kbd::before{content:"user=> ";}
+  samp{background: #aaeeee}
+
+section > dl:only-child {
+font-family: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
+  position: absolute; left:0px; top:0px; bottom:0px; right: 0px;
+
+  font-style: italic;;
+  display: block;
+x-background-color: #737;
+background-image: -webkit-linear-gradient(bottom, #542454 0%, #773377 100%);
+
+  color: white; font-size: 60px;
+  text-shadow: 0px 4px 1px black;
+  padding: 60px;}
+
+section > dl:only-child > dt{font-weight: bold; margin-bottom: 50px;}
+
+
+q{font-style:italic;  quotes: ""; padding: 6px; border-radius: 6px; background:#eee;
+}
+
+
+  html, .view body { background-color: black; counter-reset: slideidx; }
+  body, .view section { background-color: white; border-radius: 12px }
+  /* A section is a slide. It's size is 800x600, and this will never change */
+  section, .view head > title {
+      /* The font from Google */
+/*  font-family: 'Oswald', arial, serif;*/
+/*font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;*/
+font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+  font-size: 32px;
+
+  }
+
+  .view section:after {
+    counter-increment: slideidx;
+    content: counter(slideidx, decimal-leading-zero);
+    position: absolute; bottom: -80px; right: 100px;
+    color: white;
+  }
+
+  .view head > title {
+    color: white;
+    text-align: center;
+    margin: 1em 0 1em 0;
+  }
+
+h1 {margin-bottom: 40px;
+    margin-top: 200px;
+    text-align: center;
+    font-size: 80px;
+}
+h1 ~ i {margin: 10px 0px; width: inherit; display:block; text-align:center;font-size: 35px;}
+h2 {
+    margin-top: 200px;
+    text-align: center;
+    font-size: 80px;
+  }
+  h3,h4 {
+    margin: 100px 0 50px 100px;
+  }
+  h4 {font-size: inherit; margin-top: 0px; margin-bottom:0px;}
+
+  ul {
+      margin: 50px 200px;
+  }
+  li > ul {
+      margin: 15px 50px;
+}
+li{margin-bottom: 8px;}
+
+  p {
+    margin: 75px;
+    z-font-size: 35px;
+  }
+
+  blockquote {
+    height: 100%;
+    background-color: black;
+    color: white;
+    font-size: 60px;
+    padding: 50px;
+  }
+  blockquote:before {
+    content: open-quote;
+  }
+  blockquote:after {
+    content: close-quote;
+  }
+
+  /* Figures are displayed full-page, with the caption
+     on top of the image/video */
+  figure {
+    background-color: black;
+    width: 100%;
+    height: 100%;
+  }
+  figure > * {
+    position: absolute;
+  }
+  figure > img, figure > video {
+    width: 100%; height: 100%;
+  }
+  figcaption {
+    margin: 70px;
+    font-size: 50px;
+  }
+
+  footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 40px;
+    text-align: right;
+    xbackground-color: #F3F4F8;
+    xborder-top: 1px solid #CCC;
+  }
+
+  /* Transition effect */
+  section {
+    -moz-transition: left 400ms ease-in-out 0s;
+    -webkit-transition: left 400ms ease-in-out 0s;
+    -ms-transition: left 400ms ease-in-out 0s;
+transition: left 400ms ease-in-out 0s, -webkit-transform 400ms ease-in-out 0s;
+-webkit-transform: scale(1,1.4);
+   }
+  .view section {
+    -moz-transition: none;
+    -webkit-transition: none;
+    -ms-transition: none;
+    transition: none;
+}
+
+  .view section[aria-selected] {
+    border: 5px red solid;
+  }
+
+  /* Before */
+  section { left: -100%; }
+  /* Now */
+  section[aria-selected] { left: 0; -webkit-transform: scale(1,1);
+}
+  /* After */
+  section[aria-selected] ~ section { left: +100%; }
+
+  /* Incremental elements */
+
+  /* By default, visible */
+  .incremental > * { opacity: 1; }
+
+  /* The current item */
+  .incremental > *[aria-selected] { opacity: 1; }
+
+  /* The items to-be-selected */
+  .incremental > *[aria-selected] ~ * { opacity: 0; }
+
+  /* The progressbar, at the bottom of the slides, show the global
+     progress of the presentation. */
+  #progress-bar {
+    height: 4px;
+    background: #AAA;
+  }
+</style>
+
+<!-- {{{{ dzslides core
+#
+#
+#     __  __  __       .  __   ___  __
+#    |  \  / /__` |    | |  \ |__  /__`
+#    |__/ /_ .__/ |___ | |__/ |___ .__/ core :€
+#
+#
+# The following block of code is not supposed to be edited.
+# But if you want to change the behavior of these slides,
+# feel free to hack it!
+#
+-->
+
+<div id="progress-bar"></div>
+
+<!-- Default Style -->
+<style>
+  * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  [role="note"] { display: none; }
+  body {
+    width: 800px; height: 600px;
+    margin-left: -400px; margin-top: -300px;
+    position: absolute; top: 50%; left: 50%;
+    overflow: hidden;
+    display: none;
+  }
+  .view body {
+    position: static;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    display: inline-block;
+    overflow: visible; overflow-x: hidden;
+    /* undo Dz.onresize */
+    transform: none !important;
+    -moz-transform: none !important;
+    -webkit-transform: none !important;
+    -o-transform: none !important;
+    -ms-transform: none !important;
+  }
+  .view head, .view head > title { display: block }
+  section {
+    position: absolute;
+    pointer-events: none;
+    width: 100%; height: 100%;
+  }
+  .view section {
+    pointer-events: auto;
+    position: static;
+    width: 800px; height: 600px;
+    margin: -150px -200px;
+    float: left;
+
+    transform: scale(.4);
+    -moz-transform: scale(.4);
+    -webkit-transform: scale(.4);
+    -o-transform: scale(.4);
+    -ms-transform: scale(.4);
+  }
+  .view section > * { pointer-events: none; }
+  section[aria-selected] { pointer-events: auto; }
+  html { overflow: hidden; }
+  html.view { overflow: visible; }
+  body.loaded { display: block; }
+  .incremental {visibility: hidden; }
+  .incremental[active] {visibility: visible; }
+  #progress-bar{
+    bottom: 0;
+    position: absolute;
+    -moz-transition: width 400ms linear 0s;
+    -webkit-transition: width 400ms linear 0s;
+    -ms-transition: width 400ms linear 0s;
+    transition: width 400ms linear 0s;
+  }
+  .view #progress-bar {
+    display: none;
+  }
+</style>
+
+<script>
+  var Dz = {
+    remoteWindows: [],
+    idx: -1,
+    step: 0,
+    html: null,
+    slides: null,
+    progressBar : null,
+    params: {
+      autoplay: "1"
+    }
+  };
+
+  Dz.init = function() {
+    document.body.className = "loaded";
+    this.slides = Array.prototype.slice.call($$("body > section"));
+    this.progressBar = $("#progress-bar");
+    this.html = document.body.parentNode;
+    this.setupParams();
+    this.onhashchange();
+    this.setupTouchEvents();
+    this.onresize();
+    this.setupView();
+  }
+
+  Dz.setupParams = function() {
+    var p = window.location.search.substr(1).split('&');
+    p.forEach(function(e, i, a) {
+      var keyVal = e.split('=');
+      Dz.params[keyVal[0]] = decodeURIComponent(keyVal[1]);
+    });
+  // Specific params handling
+    if (!+this.params.autoplay)
+      $$.forEach($$("video"), function(v){ v.controls = true });
+  }
+
+  Dz.onkeydown = function(aEvent) {
+    // Don't intercept keyboard shortcuts
+    if (aEvent.altKey
+      || aEvent.ctrlKey
+      || aEvent.metaKey
+      || aEvent.shiftKey) {
+      return;
+    }
+    if ( aEvent.keyCode == 37 // left arrow
+      || aEvent.keyCode == 38 // up arrow
+      || aEvent.keyCode == 33 // page up
+    ) {
+      aEvent.preventDefault();
+      this.back();
+    }
+    if ( aEvent.keyCode == 39 // right arrow
+      || aEvent.keyCode == 40 // down arrow
+      || aEvent.keyCode == 34 // page down
+    ) {
+      aEvent.preventDefault();
+      this.forward();
+    }
+    if (aEvent.keyCode == 35) { // end
+      aEvent.preventDefault();
+      this.goEnd();
+    }
+    if (aEvent.keyCode == 36) { // home
+      aEvent.preventDefault();
+      this.goStart();
+    }
+    if (aEvent.keyCode == 32) { // space
+      aEvent.preventDefault();
+      this.toggleContent();
+    }
+    if (aEvent.keyCode == 70) { // f
+      aEvent.preventDefault();
+      this.goFullscreen();
+    }
+    if (aEvent.keyCode == 79) { // o
+      aEvent.preventDefault();
+      this.toggleView();
+    }
+  }
+
+  /* Touch Events */
+
+  Dz.setupTouchEvents = function() {
+    var orgX, newX;
+    var tracking = false;
+
+    var db = document.body;
+    db.addEventListener("touchstart", start.bind(this), false);
+    db.addEventListener("touchmove", move.bind(this), false);
+
+    function start(aEvent) {
+      aEvent.preventDefault();
+      tracking = true;
+      orgX = aEvent.changedTouches[0].pageX;
+    }
+
+    function move(aEvent) {
+      if (!tracking) return;
+      newX = aEvent.changedTouches[0].pageX;
+      if (orgX - newX > 100) {
+        tracking = false;
+        this.forward();
+      } else {
+        if (orgX - newX < -100) {
+          tracking = false;
+          this.back();
+        }
+      }
+    }
+  }
+
+  Dz.setupView = function() {
+    document.body.addEventListener("click", function ( e ) {
+      if (!Dz.html.classList.contains("view")) return;
+      if (!e.target || e.target.nodeName != "SECTION") return;
+
+      Dz.html.classList.remove("view");
+      Dz.setCursor(Dz.slides.indexOf(e.target) + 1);
+    }, false);
+  }
+
+  /* Adapt the size of the slides to the window */
+
+  Dz.onresize = function() {
+    var db = document.body;
+    var sx = db.clientWidth / window.innerWidth;
+    var sy = db.clientHeight / window.innerHeight;
+    var transform = "scale(" + (1/Math.max(sx, sy)) + ")";
+
+    db.style.MozTransform = transform;
+    db.style.WebkitTransform = transform;
+    db.style.OTransform = transform;
+    db.style.msTransform = transform;
+    db.style.transform = transform;
+  }
+
+
+  Dz.getNotes = function(aIdx) {
+    var s = $("section:nth-of-type(" + aIdx + ")");
+    var d = s.$("[role='note']");
+    return d ? d.innerHTML : "";
+  }
+
+  Dz.onmessage = function(aEvent) {
+    var argv = aEvent.data.split(" "), argc = argv.length;
+    argv.forEach(function(e, i, a) { a[i] = decodeURIComponent(e) });
+    var win = aEvent.source;
+    if (argv[0] === "REGISTER" && argc === 1) {
+      this.remoteWindows.push(win);
+      this.postMsg(win, "REGISTERED", document.title, this.slides.length);
+      this.postMsg(win, "CURSOR", this.idx + "." + this.step);
+      return;
+    }
+    if (argv[0] === "BACK" && argc === 1)
+      this.back();
+    if (argv[0] === "FORWARD" && argc === 1)
+      this.forward();
+    if (argv[0] === "START" && argc === 1)
+      this.goStart();
+    if (argv[0] === "END" && argc === 1)
+      this.goEnd();
+    if (argv[0] === "TOGGLE_CONTENT" && argc === 1)
+      this.toggleContent();
+    if (argv[0] === "SET_CURSOR" && argc === 2)
+      window.location.hash = "#" + argv[1];
+    if (argv[0] === "GET_CURSOR" && argc === 1)
+      this.postMsg(win, "CURSOR", this.idx + "." + this.step);
+    if (argv[0] === "GET_NOTES" && argc === 1)
+      this.postMsg(win, "NOTES", this.getNotes(this.idx));
+  }
+
+  Dz.toggleContent = function() {
+    // If a Video is present in this new slide, play it.
+    // If a Video is present in the previous slide, stop it.
+    var s = $("section[aria-selected]");
+    if (s) {
+      var video = s.$("video");
+      if (video) {
+        if (video.ended || video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      }
+    }
+  }
+
+  Dz.setCursor = function(aIdx, aStep) {
+    // If the user change the slide number in the URL bar, jump
+    // to this slide.
+    aStep = (aStep != 0 && typeof aStep !== "undefined") ? "." + aStep : ".0";
+    window.location.hash = "#" + aIdx + aStep;
+  }
+
+  Dz.onhashchange = function() {
+    var cursor = window.location.hash.split("#"),
+        newidx = 1,
+        newstep = 0;
+    if (cursor.length == 2) {
+      newidx = ~~cursor[1].split(".")[0];
+      newstep = ~~cursor[1].split(".")[1];
+      if (newstep > Dz.slides[newidx - 1].$$('.incremental > *').length) {
+        newstep = 0;
+        newidx++;
+      }
+    }
+    this.setProgress(newidx, newstep);
+    if (newidx != this.idx) {
+      this.setSlide(newidx);
+    }
+    if (newstep != this.step) {
+      this.setIncremental(newstep);
+    }
+    for (var i = 0; i < this.remoteWindows.length; i++) {
+      this.postMsg(this.remoteWindows[i], "CURSOR", this.idx + "." + this.step);
+    }
+  }
+
+  Dz.back = function() {
+    if (this.idx == 1 && this.step == 0) {
+      return;
+    }
+    if (this.step == 0) {
+      this.setCursor(this.idx - 1,
+                     this.slides[this.idx - 2].$$('.incremental > *').length);
+    } else {
+      this.setCursor(this.idx, this.step - 1);
+    }
+  }
+
+  Dz.forward = function() {
+    if (this.idx >= this.slides.length &&
+        this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+        return;
+    }
+    if (this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+      this.setCursor(this.idx + 1, 0);
+    } else {
+      this.setCursor(this.idx, this.step + 1);
+    }
+  }
+
+  Dz.goStart = function() {
+    this.setCursor(1, 0);
+  }
+
+  Dz.goEnd = function() {
+    var lastIdx = this.slides.length;
+    var lastStep = this.slides[lastIdx - 1].$$('.incremental > *').length;
+    this.setCursor(lastIdx, lastStep);
+  }
+
+  Dz.toggleView = function() {
+    this.html.classList.toggle("view");
+
+    if (this.html.classList.contains("view")) {
+      $("section[aria-selected]").scrollIntoView(true);
+    }
+  }
+
+  Dz.setSlide = function(aIdx) {
+    this.idx = aIdx;
+    var old = $("section[aria-selected]");
+    var next = $("section:nth-of-type("+ this.idx +")");
+    if (old) {
+      old.removeAttribute("aria-selected");
+      var video = old.$("video");
+      if (video) {
+        video.pause();
+      }
+    }
+    if (next) {
+      next.setAttribute("aria-selected", "true");
+      if (this.html.classList.contains("view")) {
+        next.scrollIntoView();
+      }
+      var video = next.$("video");
+      if (video && !!+this.params.autoplay) {
+        video.play();
+      }
+    } else {
+      // That should not happen
+      this.idx = -1;
+      // console.warn("Slide doesn't exist.");
+    }
+  }
+
+  Dz.setIncremental = function(aStep) {
+    this.step = aStep;
+    var old = this.slides[this.idx - 1].$('.incremental > *[aria-selected]');
+    if (old) {
+      old.removeAttribute('aria-selected');
+    }
+    var incrementals = $$('.incremental');
+    if (this.step <= 0) {
+      $$.forEach(incrementals, function(aNode) {
+        aNode.removeAttribute('active');
+      });
+      return;
+    }
+    var next = this.slides[this.idx - 1].$$('.incremental > *')[this.step - 1];
+    if (next) {
+      next.setAttribute('aria-selected', true);
+      next.parentNode.setAttribute('active', true);
+      var found = false;
+      $$.forEach(incrementals, function(aNode) {
+        if (aNode != next.parentNode)
+          if (found)
+            aNode.removeAttribute('active');
+          else
+            aNode.setAttribute('active', true);
+        else
+          found = true;
+      });
+    } else {
+      setCursor(this.idx, 0);
+    }
+    return next;
+  }
+
+  Dz.goFullscreen = function() {
+    var html = $('html'),
+        requestFullscreen = html.requestFullscreen || html.requestFullScreen || html.mozRequestFullScreen || html.webkitRequestFullScreen;
+    if (requestFullscreen) {
+      requestFullscreen.apply(html);
+    }
+  }
+
+  Dz.setProgress = function(aIdx, aStep) {
+    var slide = $("section:nth-of-type("+ aIdx +")");
+    if (!slide)
+      return;
+    var steps = slide.$$('.incremental > *').length + 1,
+        slideSize = 100 / (this.slides.length - 1),
+        stepSize = slideSize / steps;
+    this.progressBar.style.width = ((aIdx - 1) * slideSize + aStep * stepSize) + '%';
+  }
+
+  Dz.postMsg = function(aWin, aMsg) { // [arg0, [arg1...]]
+    aMsg = [aMsg];
+    for (var i = 2; i < arguments.length; i++)
+      aMsg.push(encodeURIComponent(arguments[i]));
+    aWin.postMessage(aMsg.join(" "), "*");
+  }
+
+  function init() {
+    Dz.init();
+    window.onkeydown = Dz.onkeydown.bind(Dz);
+    window.onresize = Dz.onresize.bind(Dz);
+    window.onhashchange = Dz.onhashchange.bind(Dz);
+    window.onmessage = Dz.onmessage.bind(Dz);
+  }
+
+  window.onload = init;
+</script>
+
+
+<script> // Helpers
+  if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+
+      // closest thing possible to the ECMAScript 5 internal IsCallable
+      // function
+      if (typeof this !== "function")
+      throw new TypeError(
+        "Function.prototype.bind - what is trying to be fBound is not callable"
+      );
+
+      var aArgs = Array.prototype.slice.call(arguments, 1),
+          fToBind = this,
+          fNOP = function () {},
+          fBound = function () {
+            return fToBind.apply( this instanceof fNOP ? this : oThis || window,
+                   aArgs.concat(Array.prototype.slice.call(arguments)));
+          };
+
+      fNOP.prototype = this.prototype;
+      fBound.prototype = new fNOP();
+
+      return fBound;
+    };
+  }
+
+  var $ = (HTMLElement.prototype.$ = function(aQuery) {
+    return this.querySelector(aQuery);
+  }).bind(document);
+
+  var $$ = (HTMLElement.prototype.$$ = function(aQuery) {
+    return this.querySelectorAll(aQuery);
+  }).bind(document);
+
+  $$.forEach = function(nodeList, fun) {
+    Array.prototype.forEach.call(nodeList, fun);
+  }
+
+</script>
+<!-- vim: set fdm=marker: }}} -->
