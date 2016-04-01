@@ -12,3 +12,8 @@ Some of my canned presentations.
 ## Mathematics
 
 - <a href="https://github.com/erdos/presentations/tree/master/Regex%20Fractals">Regex Fractals</a>
+- Spidron geometry
+
+## Business
+
+- <a href="https://prezi.com/ecjgpxecdrnn/shoppwork/">shopp.work Introduction</a>
