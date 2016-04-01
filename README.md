@@ -12,7 +12,7 @@ Some of my canned presentations.
 ## Mathematics
 
 - <a href="https://github.com/erdos/presentations/tree/master/Regex%20Fractals">Regex Fractals</a>
-- Spidron geometry
+- <a href="https://github.com/erdos/presentations/tree/master/Spidron%20Diversity">Spidron Diversity</a>
 
 ## Business
 
